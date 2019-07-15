@@ -123,7 +123,7 @@ object MongoTest {
         spark.sql(create_table)
 
         df.createOrReplaceTempView("toutiaoIncrement4")
-        spark.sql("insert into test.toutiao_label select category, label1, impression_count, impression_avg, relate_labels,`date` from toutiaoIncrement4")
+        spark.sql("insert into test.toutiao_label select category, label1, impression_count, impression_avg, relate_labels,`date`  from toutiaoIncrement4")
 
         df.show(10)
 
