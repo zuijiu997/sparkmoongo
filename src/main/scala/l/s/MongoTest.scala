@@ -124,7 +124,9 @@ object MongoTest {
 
 class MergeArray extends UserDefinedAggregateFunction {
     //输入的数据结构
-    override def inputSchema: StructType = StructType(Array(StructField("arr", ArrayType(StringType))))
+//    override def inputSchema: StructType = StructType(Array(StructField("arr", ArrayType(StringType))))
+    override def inputSchema: StructType = new StructType().add("arr", ArrayType(StringType)) //也可以用这种写法
+
 
     //中间结果数据结构
     override def bufferSchema: StructType = StructType(Array(StructField("arr1", ArrayType(StringType))))
