@@ -28,6 +28,12 @@ object MongoTest {
             .config("spark.mongodb.output.uri", "mongodb://root:zy79117911#@dds-wz9fcbcc474f93e41372-pub.mongodb.rds.aliyuncs.com:3717,dds-wz9fcbcc474f93e42901-pub.mongodb.rds.aliyuncs.com:3717/admin?replicaSet=mgset-10551825")
             .config("spark.mongodb.output.database", "TouTiao")
             .config("spark.mongodb.output.collection", "testSpark")
+            // 指定hive的metastore的端口  默认为9083 在hive-site.xml中查看
+            .config("hive.metastore.uris", "thrift://bigdata04:9083")
+            //指定hive的warehouse目录
+            .config("spark.sql.warehouse.dir", "hdfs://bigdata00:8020/user/hive/warehouse")
+            //直接连接hive
+            .enableHiveSupport()
             .getOrCreate()
 
         val sc = spark.sparkContext
@@ -100,7 +106,24 @@ object MongoTest {
         properties.setProperty("user", "root")
         properties.setProperty("password", "12345678")
         properties.setProperty("driver", "com.mysql.jdbc.Driver")
-        df.write.mode(SaveMode.Append).jdbc("jdbc:mysql://bigdata00:3306/study?SelectMode=cursor&zeroDateTimeBehavior=convertToNull&useServerPrepStmts=true&useSSL=false&useUnicode=true&characterEncoding=utf8", "btoutiao_label", properties)
+//        df.write.mode(SaveMode.Append).jdbc("jdbc:mysql://bigdata00:3306/study?SelectMode=cursor&zeroDateTimeBehavior=convertToNull&useServerPrepStmts=true&useSSL=false&useUnicode=true&characterEncoding=utf8", "btoutiao_label", properties)
+
+        spark.sql("use test")
+        val create_table =
+            s"""
+               |CREATE TABLE IF NOT EXISTS test.toutiao_label (
+               |category varchar(50),
+               |label1 varchar(50),
+               |impression_count bigint,
+               |impression_avg double,
+               |relate_labels varchar(255),
+               |date date)
+             """.stripMargin
+
+        spark.sql(create_table)
+
+        df.createOrReplaceTempView("toutiaoIncrement4")
+        spark.sql("insert into test.toutiao_label select category, label1, impression_count, impression_avg, relate_labels,`date` from toutiaoIncrement4")
 
         df.show(10)
 
