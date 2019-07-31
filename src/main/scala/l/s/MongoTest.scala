@@ -19,32 +19,32 @@ object MongoTest {
     def main(args: Array[String]): Unit = {
 
         val spark = SparkSession.builder()
-            .master("local[4]")
+            .master("local[1]")
             .appName("MongoSparkConnectorIntro")
             .config("spark.mongodb.input.uri", "mongodb://root:zy79117911#@dds-wz9fcbcc474f93e41372-pub.mongodb.rds.aliyuncs.com:3717,dds-wz9fcbcc474f93e42901-pub.mongodb.rds.aliyuncs.com:3717/admin?replicaSet=mgset-10551825")
             .config("spark.mongodb.input.database", "TouTiao")
             .config("spark.mongodb.input.collection", "toutiaoIncrement")
-            .config("spark.mongodb.input.partitionerOptions.partitionKey", "create_time")
+            .config("spark.mongodb.input.partitionerOptions.partitionKey", "_id")
+            .config("spark.mongodb.input.partitionerOptions.partitionSizeMB", 128)
             .config("spark.mongodb.output.uri", "mongodb://root:zy79117911#@dds-wz9fcbcc474f93e41372-pub.mongodb.rds.aliyuncs.com:3717,dds-wz9fcbcc474f93e42901-pub.mongodb.rds.aliyuncs.com:3717/admin?replicaSet=mgset-10551825")
             .config("spark.mongodb.output.database", "TouTiao")
             .config("spark.mongodb.output.collection", "testSpark")
             // 指定hive的metastore的端口  默认为9083 在hive-site.xml中查看
-            .config("hive.metastore.uris", "thrift://bigdata04:9083")
+//            .config("hive.metastore.uris", "thrift://bigdata04:9083")
             //指定hive的warehouse目录
-            .config("spark.sql.warehouse.dir", "hdfs://bigdata00:8020/user/hive/warehouse")
+//            .config("spark.sql.warehouse.dir", "hdfs://bigdata00:8020/user/hive/warehouse")
             //直接连接hive
-            .enableHiveSupport()
+//            .enableHiveSupport()
             .getOrCreate()
 
         val sc = spark.sparkContext
-
         import com.mongodb.spark._
         import com.mongodb.spark.config._
         import org.apache.spark.sql.functions._
         val t = new Date().getTime
 
         val endTime = new Date().getTime / 1000
-        val startDate = endTime - 1 * 86400
+        val startDate = endTime - 3 * 86400
         val readConfig = ReadConfig(Map("collection" -> "toutiaoIncrement", "readPreference.name" -> "secondaryPreferred"), Some(ReadConfig(sc)))
         val toutiaoIncrement = MongoSpark.load(spark, readConfig)
 
@@ -108,25 +108,25 @@ object MongoTest {
         properties.setProperty("driver", "com.mysql.jdbc.Driver")
 //        df.write.mode(SaveMode.Append).jdbc("jdbc:mysql://bigdata00:3306/study?SelectMode=cursor&zeroDateTimeBehavior=convertToNull&useServerPrepStmts=true&useSSL=false&useUnicode=true&characterEncoding=utf8", "btoutiao_label", properties)
 
-        spark.sql("use test")
-        val create_table =
-            s"""
-               |CREATE TABLE IF NOT EXISTS test.toutiao_label (
-               |category varchar(50),
-               |label1 varchar(50),
-               |impression_count bigint,
-               |impression_avg double,
-               |relate_labels varchar(255),
-               |date date)
-             """.stripMargin
-
-        spark.sql(create_table)
-
-        df.createOrReplaceTempView("toutiaoIncrement4")
-        spark.sql("insert into test.toutiao_label select category, label1, impression_count, impression_avg, relate_labels,`date`  from toutiaoIncrement4")
-
+//        spark.sql("use test")
+//        val create_table =
+//            s"""
+//               |CREATE TABLE IF NOT EXISTS test.toutiao_label (
+//               |category varchar(50),
+//               |label1 varchar(50),
+//               |impression_count bigint,
+//               |impression_avg double,
+//               |relate_labels varchar(255),
+//               |date date)
+//             """.stripMargin
+//
+//        spark.sql(create_table)
+//
+//        df.createOrReplaceTempView("toutiaoIncrement4")
+//        spark.sql("insert into test.toutiao_label select category, label1, impression_count, impression_avg, relate_labels,`date`  from toutiaoIncrement4")
+//
         df.show(10)
-
+//
         val tt = new Date().getTime
         println(tt - t)
 
