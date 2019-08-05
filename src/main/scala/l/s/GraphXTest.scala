@@ -36,8 +36,24 @@ object GraphXTest {
 //            println("------------------------------")
 //        })
 
-        graph.inDegrees.foreach(x => {
-            println(s"${x._1} ${x._2}")
+//        graph.inDegrees.foreach(x => {
+//            println(s"${x._1} ${x._2}")
+//        })
+
+        val setA: VertexRDD[Int] = VertexRDD(sc.parallelize(0L until 100L).map(id => (id, 1)))
+        val rddB: RDD[(VertexId, Double)] = sc.parallelize(0L until 100L).flatMap(id => List((id, 1.0), (id, 2.0)))
+        // There should be 200 entries in rddB
+        println(rddB.count)
+        val setB: VertexRDD[Double] = setA.aggregateUsingIndex(rddB, _ + _)
+        setB.foreach(x => {
+            println(x)
         })
+        // There should be 100 entries in setB
+//        println(setB.count)
+        // Joining A and B should now be fast!
+//        val setC: VertexRDD[Double] = setA.innerJoin(setB)((id, a, b) => a + b)
+//        setC.foreach(x => {
+//            println(x)
+//        })
     }
 }
