@@ -14,6 +14,10 @@ import scala.collection.mutable
 import scala.util.parsing.json.JSONArray
 
 
+/**
+  * 打包是要把大数据相关的包去掉，因为运行在大数据集群时，是已经包含这些包，如果保留很容易出现包冲突或者依赖版本错误的问题
+  */
+
 object MongoTest {
 
     def main(args: Array[String]): Unit = {
@@ -44,7 +48,7 @@ object MongoTest {
         val t = new Date().getTime
 
         val endTime = new Date().getTime / 1000
-        val startDate = endTime - 3 * 86400
+        val startDate = endTime - 1 * 86400
         val readConfig = ReadConfig(Map("collection" -> "toutiaoIncrement", "readPreference.name" -> "secondaryPreferred"), Some(ReadConfig(sc)))
         val toutiaoIncrement = MongoSpark.load(spark, readConfig)
 
