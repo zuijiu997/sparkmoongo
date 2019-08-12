@@ -43,6 +43,10 @@ object StructureStreaming {
             println(y)
         }).start()
         query.awaitTermination()
+
+        //append model 是没有最终结果的窗口的批次是不会输出的
+        //update model 是中间结果一次输出
+        //用的都是append的多，因为需要的都是最终结果
     }
 
 }
