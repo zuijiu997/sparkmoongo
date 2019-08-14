@@ -2,6 +2,8 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Buffer 的基本用法
@@ -21,6 +23,28 @@ import java.nio.charset.Charset;
 public class Nio {
 
     public static void main(String[] args) {
+
+//
+//        //使用Paths工具类的get()方法创建
+//        Path path = Paths.get("D:\\XMind\\bcl-java.txt");
+///*        //使用FileSystems工具类创建
+//        Path path2 = FileSystems.getDefault().getPath("c:\\data\\myfile.txt");*/
+//        System.out.println("文件名：" + path.getFileName());
+//        System.out.println("名称元素的数量：" + path.getNameCount());
+//        System.out.println("父路径：" + path.getParent());
+//        System.out.println("根路径：" + path.getRoot());
+//        System.out.println("是否是绝对路径：" + path.isAbsolute());
+//        //startsWith()方法的参数既可以是字符串也可以是Path对象
+//        System.out.println("是否是以为给定的路径D:开始：" + path.startsWith("D:\\") );
+//        System.out.println("该路径的字符串形式：" + path.toString());
+
+        File file = new File("");
+//        file.getPath();
+//        Files.copy(new Path())
+
+//        Path path = Files.walkFileTree();
+//        path.get
+
         readNIO();
     }
 
